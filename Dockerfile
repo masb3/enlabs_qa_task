@@ -18,7 +18,6 @@ WORKDIR /code
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
 COPY tests/ .
 
 CMD [ "pytest" ]
