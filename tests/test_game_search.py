@@ -9,29 +9,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 
+from common.game_search_elements import SEARCH_BOX, GAMES
+
 
 URL = 'https://www.isoftbet.com/portfolio/'
-GAMES_TOTAL = 115
-
-
-def get_all_games() -> list:
-    chrome_options = Options()
-    chrome_options.add_argument('--headless')
-    chrome_options.add_argument('--no-sandbox')
-    chrome_options.add_argument('--disable-dev-shm-usage')
-
-    driver = webdriver.Chrome(options=chrome_options)
-    driver.get(URL)
-    time.sleep(3)
-    games = list()
-    for i in range(1, GAMES_TOTAL + 1):
-        game_xpath = f'//*[@id="isotope"]/div[{i}]'
-        game_name = driver.find_element_by_xpath(
-            f'//*[@id="isotope"]/div[{i}]/div/div[2]/a/h4').get_attribute('innerHTML')
-        games.append([game_name, game_xpath])
-
-    driver.quit()
-    return games
 
 
 def test_search_uppercase():
@@ -46,25 +27,22 @@ def test_search_uppercase():
     driver.maximize_window()
     time.sleep(3)
 
-    search_box = driver.find_element_by_id('quicksearch')
-    games = get_all_games()
+    search_box = driver.find_element_by_id(SEARCH_BOX)
     try:
-        for idx, game in enumerate(games, start=1):
-            game_name = game[0]
-            game_xpath = game[1]
-
+        for game in GAMES:
             search_box.send_keys(Keys.CONTROL + 'a')
             search_box.send_keys(Keys.DELETE)
 
+            game_name = driver.find_element_by_xpath(game.name_xpath).get_attribute('innerHTML')
             search_box.send_keys(game_name.upper())
             time.sleep(1)
-            assert driver.find_element_by_xpath(game_xpath).is_displayed() is True
+            assert driver.find_element_by_xpath(game.xpath).is_displayed() is True
 
             # Launch game, opens in new tab
             launcher = WebDriverWait(driver, 5).\
-                until(EC.element_to_be_clickable((By.XPATH, f'//*[@id="isotope"]/div[{idx}]/div/div[4]/a')))
+                until(EC.element_to_be_clickable((By.XPATH, game.play_btn_xpath)))
             ActionChains(driver).move_to_element(launcher).perform()
-            driver.find_element_by_xpath(f'//*[@id="isotope"]/div[{idx}]/div/div[1]/a').click()
+            driver.find_element_by_xpath(game.image_click_xpath).click()
             # Move to new tab
             driver.switch_to.window(driver.window_handles[-1])
             assert 'game-launcher-lux' in driver.current_url
@@ -88,25 +66,22 @@ def test_search_lowercase():
     driver.minimize_window()
     time.sleep(3)
 
-    search_box = driver.find_element_by_id('quicksearch')
-    games = get_all_games()
+    search_box = driver.find_element_by_id(SEARCH_BOX)
     try:
-        for idx, game in enumerate(games, start=1):
-            game_name = game[0]
-            game_xpath = game[1]
-
+        for game in GAMES:
             search_box.send_keys(Keys.CONTROL + 'a')
             search_box.send_keys(Keys.DELETE)
 
+            game_name = driver.find_element_by_xpath(game.name_xpath).get_attribute('innerHTML')
             search_box.send_keys(game_name.lower())
             time.sleep(1)
-            assert driver.find_element_by_xpath(game_xpath).is_displayed() is True
+            assert driver.find_element_by_xpath(game.xpath).is_displayed() is True
 
             # Launch game, opens in new tab
             launcher = WebDriverWait(driver, 5).\
-                until(EC.element_to_be_clickable((By.XPATH, f'//*[@id="isotope"]/div[{idx}]/div/div[4]/a')))
+                until(EC.element_to_be_clickable((By.XPATH, game.play_btn_xpath)))
             ActionChains(driver).move_to_element(launcher).perform()
-            driver.find_element_by_xpath(f'//*[@id="isotope"]/div[{idx}]/div/div[1]/a').click()
+            driver.find_element_by_xpath(game.image_click_xpath).click()
             # Move to new tab
             driver.switch_to.window(driver.window_handles[-1])
             assert 'game-launcher-lux' in driver.current_url
@@ -130,16 +105,13 @@ def test_search_mixedcase():
     driver.minimize_window()
     time.sleep(3)
 
-    search_box = driver.find_element_by_id('quicksearch')
-    games = get_all_games()
+    search_box = driver.find_element_by_id(SEARCH_BOX)
     try:
-        for idx, game in enumerate(games, start=1):
-            game_name = game[0]
-            game_xpath = game[1]
-
+        for game in GAMES:
             search_box.send_keys(Keys.CONTROL + 'a')
             search_box.send_keys(Keys.DELETE)
 
+            game_name = driver.find_element_by_xpath(game.name_xpath).get_attribute('innerHTML')
             mixed_name = ''
             now_lower = True
             for char in game_name:
@@ -147,13 +119,13 @@ def test_search_mixedcase():
                 now_lower ^= True
             search_box.send_keys(mixed_name)
             time.sleep(1)
-            assert driver.find_element_by_xpath(game_xpath).is_displayed() is True
+            assert driver.find_element_by_xpath(game.xpath).is_displayed() is True
 
             # Launch game, opens in new tab
             launcher = WebDriverWait(driver, 5).\
-                until(EC.element_to_be_clickable((By.XPATH, f'//*[@id="isotope"]/div[{idx}]/div/div[4]/a')))
+                until(EC.element_to_be_clickable((By.XPATH, game.play_btn_xpath)))
             ActionChains(driver).move_to_element(launcher).perform()
-            driver.find_element_by_xpath(f'//*[@id="isotope"]/div[{idx}]/div/div[1]/a').click()
+            driver.find_element_by_xpath(game.image_click_xpath).click()
             # Move to new tab
             driver.switch_to.window(driver.window_handles[-1])
             assert 'game-launcher-lux' in driver.current_url
@@ -178,15 +150,13 @@ def test_search_no_match(dummy_name):
     driver.get(URL)
     time.sleep(3)
 
-    search_box = driver.find_element_by_id('quicksearch')
-    games = get_all_games()
+    search_box = driver.find_element_by_id(SEARCH_BOX)
 
     search_box.send_keys(dummy_name)
     time.sleep(2)
 
     try:
-        for game in games:
-            game_xpath = game[1]
-            assert driver.find_element_by_xpath(game_xpath).is_displayed() is False
+        for game in GAMES:
+            assert driver.find_element_by_xpath(game.xpath).is_displayed() is False
     finally:
         driver.quit()

@@ -6,6 +6,10 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 
+from common.login_form_elements import (MAIN_PAGE_LOGIN_BTN, EMAIL_FIELD, PWD_FIELD, LOGIN_BTN,
+                                        EMAIL_VALIDATION_ERROR, PWD_VALIDATION_ERROR, INVAL_EMAIL_PWD_ERROR,
+                                        FORGOT_PWD_BTN, SIGNUP_BTN)
+
 
 URL = 'https://www.optibet.lt/'
 
@@ -22,13 +26,13 @@ class TestLoginForm:
         cls.driver.get(URL)
         time.sleep(3)
         # Open login form
-        cls.driver.find_element_by_xpath('//*[@id="topBar"]/div[1]/div[2]/button[1]').click()
+        cls.driver.find_element_by_xpath(MAIN_PAGE_LOGIN_BTN).click()
         time.sleep(1)
         cls.initial_url = cls.driver.current_url
 
-        cls.email_field = cls.driver.find_element_by_name('email')
-        cls.pwd_field = cls.driver.find_element_by_name('password')
-        cls.login_button = cls.driver.find_element_by_css_selector("[data-id='login-button']")
+        cls.email_field = cls.driver.find_element_by_name(EMAIL_FIELD)
+        cls.pwd_field = cls.driver.find_element_by_name(PWD_FIELD)
+        cls.login_button = cls.driver.find_element_by_css_selector(LOGIN_BTN)
 
     @classmethod
     def teardown_class(cls):
@@ -53,14 +57,12 @@ class TestLoginForm:
         time.sleep(1)
 
         try:
-            email_validation_error = self.driver.find_element_by_xpath(
-                '//*[@id="app"]/div[1]/main/div[3]/div/div/form/div[1]/div')
+            email_validation_error = self.driver.find_element_by_xpath(EMAIL_VALIDATION_ERROR)
         except NoSuchElementException:
             email_validation_error = None
 
         try:
-            pwd_validation_error = self.driver.find_element_by_xpath(
-                '//*[@id="app"]/div[1]/main/div[3]/div/div/form/div[2]/div[1]/div')
+            pwd_validation_error = self.driver.find_element_by_xpath(PWD_VALIDATION_ERROR)
         except NoSuchElementException:
             pwd_validation_error = None
 
@@ -79,14 +81,12 @@ class TestLoginForm:
         time.sleep(1)
 
         try:
-            email_validation_error = self.driver.find_element_by_xpath(
-                '//*[@id="app"]/div[1]/main/div[3]/div/div/form/div[1]/div')
+            email_validation_error = self.driver.find_element_by_xpath(EMAIL_VALIDATION_ERROR)
         except NoSuchElementException:
             email_validation_error = None
 
         try:
-            pwd_validation_error = self.driver.find_element_by_xpath(
-                '//*[@id="app"]/div[1]/main/div[3]/div/div/form/div[2]/div[1]/div')
+            pwd_validation_error = self.driver.find_element_by_xpath(PWD_VALIDATION_ERROR)
         except NoSuchElementException:
             pwd_validation_error = None
 
@@ -105,8 +105,7 @@ class TestLoginForm:
         time.sleep(2)
 
         try:
-            invalid_email_pwd_error = self.driver.find_element_by_xpath(
-                '//*[@id="app"]/div[1]/main/div[3]/div/div/form/div[2]/div[1]/div')
+            invalid_email_pwd_error = self.driver.find_element_by_xpath(INVAL_EMAIL_PWD_ERROR)
         except NoSuchElementException:
             invalid_email_pwd_error = None
 
@@ -124,11 +123,10 @@ def test_forgot_pwd_button():
     driver.get(URL)
     time.sleep(3)
     # Open login form
-    driver.find_element_by_xpath('//*[@id="topBar"]/div[1]/div[2]/button[1]').click()
+    driver.find_element_by_xpath(MAIN_PAGE_LOGIN_BTN).click()
     time.sleep(1)
 
-    forgot_pwd_button = driver.find_element_by_xpath(
-        '//*[@id="app"]/div[1]/main/div[3]/div/div/form/div[3]/a')
+    forgot_pwd_button = driver.find_element_by_xpath(FORGOT_PWD_BTN)
 
     forgot_pwd_button.click()
     time.sleep(1)
@@ -149,11 +147,10 @@ def test_signup_button():
     driver.get(URL)
     time.sleep(3)
     # Open login form
-    driver.find_element_by_xpath('//*[@id="topBar"]/div[1]/div[2]/button[1]').click()
+    driver.find_element_by_xpath(MAIN_PAGE_LOGIN_BTN).click()
     time.sleep(1)
 
-    signup_button = driver.find_element_by_xpath(
-        '//*[@id="app"]/div[1]/main/div[3]/div/div/div[3]/a')
+    signup_button = driver.find_element_by_xpath(SIGNUP_BTN)
 
     signup_button.click()
     time.sleep(1)
